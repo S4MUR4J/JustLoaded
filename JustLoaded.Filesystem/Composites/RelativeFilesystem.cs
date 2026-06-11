@@ -1,4 +1,4 @@
-namespace JustLoaded.Filesystem;
+namespace JustLoaded.Filesystem.Composites;
 
 /// <summary>
 /// Wraps another filesystem and prepends a fixed path prefix to every operation.

@@ -1,4 +1,4 @@
-namespace JustLoaded.Filesystem;
+namespace JustLoaded.Filesystem.Implementations;
 
 /// <summary>
 /// Disk-backed filesystem rooted at a given directory. Paths are resolved relative to the root.

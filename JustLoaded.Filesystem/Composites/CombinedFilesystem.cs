@@ -1,4 +1,6 @@
-namespace JustLoaded.Filesystem;
+using JustLoaded.Filesystem.Internal;
+
+namespace JustLoaded.Filesystem.Composites;
 
 /// <summary>
 /// Routes filesystem operations by mod ID. Each mod name maps to its own filesystem.
@@ -16,7 +18,10 @@ public class CombinedFilesystem : IFilesystem
     /// <param name="filesystem">Filesystem to register under that name.</param>
     public void AddFileSystem(string name, IFilesystem filesystem)
     {
-        FilesystemValidator.AssertCompatible(_fileSystems.Values.Append(filesystem), nameof(CombinedFilesystem));
+        FilesystemValidator.AssertCompatible(
+            _fileSystems.Values.Append(filesystem),
+            nameof(CombinedFilesystem)
+        );
         _fileSystems.Add(name, filesystem);
     }
 
@@ -31,9 +36,7 @@ public class CombinedFilesystem : IFilesystem
     public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path)
     {
         var paths = MatchModId(path.modSelector)
-            .SelectMany(kvp =>
-                kvp.Value.ListPaths(path).Select(p => p.WithMod(kvp.Key))
-            );
+            .SelectMany(kvp => kvp.Value.ListPaths(path).Select(p => p.WithMod(kvp.Key)));
         return paths;
     }
 
@@ -45,8 +48,7 @@ public class CombinedFilesystem : IFilesystem
     {
         var files = MatchModId(path.modSelector)
             .SelectMany(kvp =>
-                kvp.Value.ListFiles(path, pattern, recursive)
-                    .Select(f => f.WithMod(kvp.Key))
+                kvp.Value.ListFiles(path, pattern, recursive).Select(f => f.WithMod(kvp.Key))
             );
         return files;
     }

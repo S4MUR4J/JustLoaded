@@ -1,4 +1,4 @@
-namespace JustLoaded.Filesystem;
+namespace JustLoaded.Filesystem.Composites;
 
 /// <summary>
 /// Layers multiple filesystems with priority-based resolution. Earlier filesystems take precedence;

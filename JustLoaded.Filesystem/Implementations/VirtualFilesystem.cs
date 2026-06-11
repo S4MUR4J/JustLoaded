@@ -1,7 +1,7 @@
 using System.IO.Enumeration;
 using System.Text;
 
-namespace JustLoaded.Filesystem;
+namespace JustLoaded.Filesystem.Implementations;
 
 /// <summary>
 /// In-memory filesystem backed by a flat path → bytes dictionary.

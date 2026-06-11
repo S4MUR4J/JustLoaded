@@ -1,15 +1,19 @@
+using JustLoaded.Filesystem.Implementations;
+
 namespace JustLoaded.Filesystem.Tests.Virtual;
 
-public class VirtualFilesystemTests : FilesystemTester<VirtualFilesystem, FilesystemTestSource> {
-
-    protected override VirtualFilesystem SetupFilesystem() {
+public class VirtualFilesystemTests : FilesystemTester<VirtualFilesystem, FilesystemTestSource>
+{
+    protected override VirtualFilesystem SetupFilesystem()
+    {
         return new VirtualFilesystem();
     }
 
-    protected override void MakeFile(ModAssetPath fileName, string content) {
+    protected override void MakeFile(ModAssetPath fileName, string content)
+    {
         fs.AddFile(fileName.path, content);
     }
-    
+
     /*
     //[TestCase("/", new[] { "dir/file1", "file2"}, new[] { "file2" })]
     //[TestCase("/", new[] { "dir/file1", "dir/file2"}, new string[] { })]
@@ -59,5 +63,4 @@ public class VirtualFilesystemTests : FilesystemTester<VirtualFilesystem, Filesy
         Assert.That(text.ReadLine(), Is.EqualTo(expectedContent));
     }
     */
-    
 }

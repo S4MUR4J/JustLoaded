@@ -2,6 +2,8 @@
 using JustLoaded.Core;
 using JustLoaded.Discovery.Reflect;
 using JustLoaded.Filesystem;
+using JustLoaded.Filesystem.Composites;
+using JustLoaded.Filesystem.Implementations;
 using JustLoaded.Logger;
 using MultiAssembly.Game;
 
@@ -9,38 +11,33 @@ Console.WriteLine("Hello, World!");
 
 var fs = new RelativeFilesystem(new PhysicalFilesystem(PathExtensions.Local), "mods".AsPath());
 
-using var loggerBase = new Logger(
-    new ConsoleLogModule()
-);
+using var loggerBase = new Logger(new ConsoleLogModule());
 
-var ml = new ModLoaderSystem.Builder(
-    new AssemblyModProvider(
-        new FilesystemAssemblyProvider(fs)
-        )
-    ).Build()
+var ml = new ModLoaderSystem.Builder(new AssemblyModProvider(new FilesystemAssemblyProvider(fs)))
+    .Build()
     .AddAttachment<ILogger>(loggerBase)
     .AddAttachment<IReadOnlyMasterDatabase>(new MasterDatabase());
 
-try {
+try
+{
     ml.DiscoverMods();
     ml.ResolveDependencies();
     ml.InitMods();
     ml.Load();
 }
-catch (Exception e) {
+catch (Exception e)
+{
     Console.WriteLine(e);
 }
 
 var log = ml.GetRequiredAttachment<ILogger>();
 
-log.Info(""+ml.CurrentInitPhase);
+log.Info("" + ml.CurrentInitPhase);
 
-var items = (IContentDatabase<Item>?)ml.GetRequiredAttachment<IReadOnlyMasterDatabase>().GetByContentType<Item>();
+var items = (IContentDatabase<Item>?)
+    ml.GetRequiredAttachment<IReadOnlyMasterDatabase>().GetByContentType<Item>();
 
-
-foreach (var key in items!.ContentKeys) {
-    log.Info("Item: "+key);
+foreach (var key in items!.ContentKeys)
+{
+    log.Info("Item: " + key);
 }
-
-
-

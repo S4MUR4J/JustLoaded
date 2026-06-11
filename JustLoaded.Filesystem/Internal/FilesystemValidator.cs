@@ -1,4 +1,4 @@
-namespace JustLoaded.Filesystem;
+namespace JustLoaded.Filesystem.Internal;
 
 static class FilesystemValidator
 {
