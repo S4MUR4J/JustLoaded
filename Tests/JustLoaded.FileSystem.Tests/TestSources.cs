@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Threading.Tasks.Sources;
-using JustLoaded.Filesystem;
 using static JustLoaded.Filesystem.Tests.IFilesystemTestSource;
 
 namespace JustLoaded.Filesystem.Tests;

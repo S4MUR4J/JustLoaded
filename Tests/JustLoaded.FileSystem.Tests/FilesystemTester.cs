@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Xml.XPath;
-using JustLoaded.Filesystem;
-using PathLib;
 
 namespace JustLoaded.Filesystem.Tests;
 

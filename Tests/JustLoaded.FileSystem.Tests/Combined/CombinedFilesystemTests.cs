@@ -1,5 +1,3 @@
-using JustLoaded.Filesystem;
-
 namespace JustLoaded.Filesystem.Tests.Combined;
 
 public class CombinedFilesystemTests : FilesystemTester<CombinedFilesystem, CfsTestSourceSource> {

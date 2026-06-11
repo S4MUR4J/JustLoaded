@@ -1,4 +1,3 @@
-using JustLoaded.Filesystem;
 using PathLib;
 
 namespace JustLoaded.Filesystem.Tests.Physical;
