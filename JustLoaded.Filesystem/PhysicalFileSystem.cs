@@ -9,12 +9,12 @@ public class PhysicalFilesystem(string rootParam) : IFilesystem
 
     public bool HandlesSource => false;
 
-    public Stream OpenFile(ModAssetPath path)
+    public Stream? OpenFile(ModAssetPath path)
     {
         var concretePath = Path.Combine(Root, path.path);
 
         if (!File.Exists(concretePath))
-            throw new FileNotFoundException($"File not found: {path}");
+            return null;
 
         return File.Open(path: concretePath, mode: FileMode.Open);
     }

@@ -19,11 +19,11 @@ public class VirtualFilesystem : IFilesystem
         _files[normalized] = data;
     }
 
-    public Stream OpenFile(ModAssetPath path)
+    public Stream? OpenFile(ModAssetPath path)
     {
         var normalized = NormalizePath(path.path);
         if (!_files.TryGetValue(normalized, out var content))
-            throw new FileNotFoundException($"File not found: {path}");
+            return null;
 
         return new MemoryStream(content);
     }

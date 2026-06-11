@@ -16,13 +16,7 @@ public class CombinedFilesystem : IFilesystem
     /// <param name="filesystem">Filesystem to register under that name.</param>
     public void AddFileSystem(string name, IFilesystem filesystem)
     {
-        if (
-            _fileSystems.Count > 0
-            && _fileSystems.Values.First().HandlesSource != filesystem.HandlesSource
-        )
-            throw new ArgumentException(
-                $"Cannot mix source-handling and non-source-handling filesystems in {nameof(CombinedFilesystem)}."
-            );
+        FilesystemValidator.AssertCompatible(_fileSystems.Values.Append(filesystem), nameof(CombinedFilesystem));
         _fileSystems.Add(name, filesystem);
     }
 
@@ -38,7 +32,7 @@ public class CombinedFilesystem : IFilesystem
     {
         var paths = MatchModId(path.modSelector)
             .SelectMany(kvp =>
-                kvp.Value.ListPaths(path).Select(p => new ModAssetPath(kvp.Key, p.path))
+                kvp.Value.ListPaths(path).Select(p => p.WithMod(kvp.Key))
             );
         return paths;
     }
@@ -52,7 +46,7 @@ public class CombinedFilesystem : IFilesystem
         var files = MatchModId(path.modSelector)
             .SelectMany(kvp =>
                 kvp.Value.ListFiles(path, pattern, recursive)
-                    .Select(f => new ModAssetPath(kvp.Key, f.path))
+                    .Select(f => f.WithMod(kvp.Key))
             );
         return files;
     }

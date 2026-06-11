@@ -34,6 +34,9 @@ public class ModAssetPath : IEquatable<ModAssetPath> {
         return HashCode.Combine(modSelector, path);
     }
 
+    /// <summary>Returns a copy of this path with a different mod selector.</summary>
+    public ModAssetPath WithMod(string newModSelector) => new ModAssetPath(newModSelector, path);
+
     /// <returns>String in <c>modSelector:path</c> format.</returns>
     public override string ToString() {
         return $"{modSelector}:{path}";
