@@ -1,33 +1,29 @@
-using System.Runtime.InteropServices;
-using PathLib;
-
 namespace JustLoaded.Filesystem;
 
+/// <summary>
+/// A mod-scoped file address combining a mod selector with a file path.
+/// Used to uniquely identify assets across multiple mods loaded simultaneously.
+/// </summary>
 public class ModAssetPath : IEquatable<ModAssetPath> {
 
-    public static readonly ModAssetPath Empty = new("*", "".AsPath());
+    /// <summary>File path within the mod's filesystem.</summary>
+    public readonly string path;
 
+    /// <summary>Identifies the owning mod. <c>"*"</c> matches any mod.</summary>
     public readonly string modSelector;
-    public readonly IPurePath path;
 
-    /*
+    /// <summary>Wildcard address matching any mod at the root. Use as a query base spanning all mods.</summary>
+    public static readonly ModAssetPath EmptyModAssetPath = new ModAssetPath("*", string.Empty);
+
+    /// <param name="modSelector">Mod identifier, or <c>"*"</c> to match any mod.</param>
+    /// <param name="path">File path within the mod's filesystem.</param>
     internal ModAssetPath(string modSelector, string path) {
-        this.modSelector = modSelector;
-        this.path = path.AsPath();
-    }
-    */
-
-    internal ModAssetPath(string modSelector, IPurePath path) {
         this.modSelector = modSelector;
         this.path = path;
     }
 
-    public ModAssetPath WithModSelector(string modSelector) {
-        return new ModAssetPath(modSelector, new PosixPath(path.ToPosix()));
-    }
-    
     public bool Equals(ModAssetPath? other) {
-        return other != null && modSelector == other.modSelector && path.ToPosix() == other.path.ToPosix();
+        return other != null && modSelector == other.modSelector && path == other.path;
     }
 
     public override bool Equals(object? obj) {
@@ -35,22 +31,11 @@ public class ModAssetPath : IEquatable<ModAssetPath> {
     }
 
     public override int GetHashCode() {
-        return HashCode.Combine(modSelector, path.ToPosix());
+        return HashCode.Combine(modSelector, path);
     }
 
+    /// <returns>String in <c>modSelector:path</c> format.</returns>
     public override string ToString() {
-        return $"{modSelector}:{path.ToPosix()}";
+        return $"{modSelector}:{path}";
     }
-}
-
-public static class ModAssetPathExtensions {
-
-    public static ModAssetPath RelativeTo(this ModAssetPath asset, IPurePath relativeTo) {
-        return asset.path.RelativeToFixed(relativeTo).FromMod(asset.modSelector);
-    }
-
-    public static Func<ModAssetPath, ModAssetPath> RelativeToSelect(IPurePath relativeTo) {
-        return asset => asset.RelativeTo(relativeTo);
-    }
-    
 }

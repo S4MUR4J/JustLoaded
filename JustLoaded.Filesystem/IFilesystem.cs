@@ -1,7 +1,7 @@
 namespace JustLoaded.Filesystem;
 
 /// <summary>
-/// Represents a read only file system
+/// Read-only, mod-scoped filesystem abstraction. Implementations can map to disk, memory, or compose other filesystems.
 /// </summary>
 public interface IFilesystem {
 
@@ -9,15 +9,7 @@ public interface IFilesystem {
 
     public Stream? OpenFile(ModAssetPath path);
 
-    public IEnumerable<ModAssetPath> ListFiles(ModAssetPath path, string pattern = "*", bool recursive = false);
-
     public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path);
-    
-    public static void HandleSourceHandlingWarning(IFilesystem filesystem) {
-        if (filesystem.HandlesSource) {
-            //TODO use Logger (Warning)
-            Console.Error.WriteLine("Nesting source-handling filesystems in one another will most likely cause issues");
-        }
-    }
-    
+
+    public IEnumerable<ModAssetPath> ListFiles(ModAssetPath path, string pattern = "*", bool recursive = false);
 }

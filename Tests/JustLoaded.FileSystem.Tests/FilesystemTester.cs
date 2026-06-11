@@ -75,7 +75,7 @@ public abstract class FilesystemTester<TFilesystem, TSource> where TSource : IFi
     
     [TestCaseSource(nameof(SourceListFilesPattern))]
     public void ListFilesPattern(string pattern, ModAssetPath[] files, ModAssetPath[] expectedFiles) {
-        DoListFiles(ModAssetPath.Empty, files, expectedFiles, pattern, false);
+        DoListFiles(ModAssetPath.EmptyModAssetPath, files, expectedFiles, pattern, false);
     }
     
     protected abstract TFilesystem SetupFilesystem();

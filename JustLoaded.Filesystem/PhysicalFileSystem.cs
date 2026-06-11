@@ -1,67 +1,59 @@
-using System.Runtime.InteropServices;
-using PathLib;
-
 namespace JustLoaded.Filesystem;
 
-/// <summary>
-/// Issue: Does NOT work with absolute paths
-/// </summary>
-public class PhysicalFilesystem : IFilesystem {
-    
+public class PhysicalFilesystem(string rootParam) : IFilesystem
+{
+    private string Root { get; } = rootParam;
+
     public bool HandlesSource => false;
-    public IPath Root { get; }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="root">Issue: MUST be a relative path</param>
-    public PhysicalFilesystem(IPurePath root) {
-        // if (root.IsAbsolute()) {
-        //     root = root.RelativeTo(PathExtensions.CurrentDirectory);
-        // }
-        Root = new PosixPath(root.ToPosix());
+
+    public Stream OpenFile(ModAssetPath path)
+    {
+        var concretePath = Path.Combine(Root, path.path);
+
+        if (!File.Exists(concretePath))
+            throw new FileNotFoundException($"File not found: {path}");
+
+        return File.Open(path: concretePath, mode: FileMode.Open);
     }
 
-    public Stream? OpenFile(ModAssetPath path) {
-        var concretePath = ApplyPath(path.path);
-        if (concretePath.IsDir()) {
-            Console.WriteLine("Requested file is a directory");
-            return null;
-        }
-        if (!concretePath.IsFile()) {
-            return null;
-        }
-        return concretePath.Open(FileMode.Open);
+    public IEnumerable<ModAssetPath> ListFiles(
+        ModAssetPath path,
+        string pattern = "*",
+        bool recursive = false
+    )
+    {
+        var concretePath = Path.Combine(Root, path.path);
+
+        if (!Directory.Exists(concretePath))
+            throw new DirectoryNotFoundException($"Directory not found: {path}");
+
+        var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+        var modAssetPaths = Directory
+            .EnumerateFiles(path: concretePath, searchPattern: pattern, searchOption: searchOption)
+            .Select(filePath => new ModAssetPath(
+                path.modSelector,
+                Path.GetRelativePath(Root, filePath)
+            ));
+        return modAssetPaths;
     }
 
-    public IEnumerable<ModAssetPath> ListFiles(ModAssetPath path, string pattern = "*", bool recursive = false) {
-        var concretePath = ApplyPath(path.path);
-        if(!concretePath.IsDir()) {
-            return Enumerable.Empty<ModAssetPath>();
-        }
-        
-        return concretePath.ListDir(recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Where(path1 => path1.IsFile())
-            .Where(path1 => path1.Filename.MatchPattern(pattern))
-            .Select(path1 => new ModAssetPath("", RestorePath(path1)));
-    }
+    public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path)
+    {
+        var concretePath = Path.Combine(Root, path.path);
 
-    public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path) {
-        var concretePath = ApplyPath(path.path);
-        if(!concretePath.IsDir()) {
-            return Enumerable.Empty<ModAssetPath>();
-        }
-        
-        return concretePath.ListDir(SearchOption.TopDirectoryOnly)
-            .Where(path1 => path1.IsDir())
-            .Select(path1 => new ModAssetPath("", RestorePath(path1)));
-    }
-    
-    private IPath ApplyPath(IPurePath path) {
-        return Root.Join(path.CollapseAbsolutePath());
-    }
+        if (!Directory.Exists(concretePath))
+            throw new DirectoryNotFoundException($"Directory not found: {path}");
 
-    private IPurePath RestorePath(IPath path) {
-        return path.RelativeToFixed(PathExtensions.CurrentDirectory).RelativeToFixed(Root);
+        var modAssetPaths = Directory
+            .EnumerateDirectories(
+                path: concretePath,
+                searchPattern: "*",
+                searchOption: SearchOption.TopDirectoryOnly
+            )
+            .Select(filePath => new ModAssetPath(
+                path.modSelector,
+                Path.GetRelativePath(Root, filePath)
+            ));
+        return modAssetPaths;
     }
 }
