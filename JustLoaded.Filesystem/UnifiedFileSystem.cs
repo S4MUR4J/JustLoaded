@@ -21,7 +21,7 @@ public class UnifiedFileSystem : IFilesystem
             return;
         }
 
-        HandlesSource = _filesystems[0].HandlesSource;
+        HandlesSource = _filesystems.First().HandlesSource;
         if (_filesystems.Any(fs => fs.HandlesSource != HandlesSource))
             throw new ArgumentException(
                 $"Cannot mix source-handling and non-source-handling filesystems in {nameof(UnifiedFileSystem)}."

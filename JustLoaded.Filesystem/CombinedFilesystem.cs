@@ -1,43 +1,62 @@
 namespace JustLoaded.Filesystem;
 
-public class CombinedFilesystem : IFilesystem {
+/// <summary>
+/// Routes filesystem operations by mod ID. Each mod name maps to its own filesystem.
+/// Wildcard selector <c>"*"</c> fans out to all registered filesystems.
+/// </summary>
+public class CombinedFilesystem : IFilesystem
+{
+    public bool HandlesSource =>
+        _fileSystems.Count > 0 && _fileSystems.Values.All(fs => fs.HandlesSource);
 
-    public bool HandlesSource => true;
+    private readonly Dictionary<string, IFilesystem> _fileSystems =
+        new Dictionary<string, IFilesystem>();
 
-    private readonly Dictionary<string, IFilesystem> _fileSystems = new Dictionary<string, IFilesystem>();
-
-    public void AddFileSystem(string name, IFilesystem filesystem) {
+    /// <param name="name">Mod identifier used to route lookups.</param>
+    /// <param name="filesystem">Filesystem to register under that name.</param>
+    public void AddFileSystem(string name, IFilesystem filesystem)
+    {
+        if (
+            _fileSystems.Count > 0
+            && _fileSystems.Values.First().HandlesSource != filesystem.HandlesSource
+        )
+            throw new ArgumentException(
+                $"Cannot mix source-handling and non-source-handling filesystems in {nameof(CombinedFilesystem)}."
+            );
         _fileSystems.Add(name, filesystem);
     }
 
-    public Stream? OpenFile(ModAssetPath path) {
-        foreach (var kvp in MatchModId(path.modSelector)) {
-            var file = kvp.Value.OpenFile(path);
-            if (file != null) {
-                return file;
-            }
-        }
-        return null;
+    public Stream? OpenFile(ModAssetPath path)
+    {
+        var stream = MatchModId(path.modSelector)
+            .Select(kvp => kvp.Value.OpenFile(path))
+            .FirstOrDefault(f => f != null);
+        return stream;
     }
 
-    public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path) {
-        foreach (var fs in MatchModId(path.modSelector)) {
-            foreach (var pathOut in fs.Value.ListPaths(path)) {
-                yield return new ModAssetPath(fs.Key, pathOut.path);
-            }
-        }
+    public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path)
+    {
+        var paths = MatchModId(path.modSelector)
+            .SelectMany(kvp =>
+                kvp.Value.ListPaths(path).Select(p => new ModAssetPath(kvp.Key, p.path))
+            );
+        return paths;
     }
 
-    public IEnumerable<ModAssetPath> ListFiles(ModAssetPath path, string pattern = "*", bool recursive = false) {
-        foreach (var fs in MatchModId(path.modSelector)) {
-            foreach (var file in fs.Value.ListFiles(path, pattern, recursive)) {
-                yield return new ModAssetPath(fs.Key, file.path);
-            }
-        }
+    public IEnumerable<ModAssetPath> ListFiles(
+        ModAssetPath path,
+        string pattern = "*",
+        bool recursive = false
+    )
+    {
+        var files = MatchModId(path.modSelector)
+            .SelectMany(kvp =>
+                kvp.Value.ListFiles(path, pattern, recursive)
+                    .Select(f => new ModAssetPath(kvp.Key, f.path))
+            );
+        return files;
     }
 
-
-    private IEnumerable<KeyValuePair<string, IFilesystem>> MatchModId(string modId) {
-        return _fileSystems.Where(pair => modId == "*" || pair.Key == modId);
-    }
+    private IEnumerable<KeyValuePair<string, IFilesystem>> MatchModId(string modId) =>
+        _fileSystems.Where(pair => modId == "*" || pair.Key == modId);
 }
