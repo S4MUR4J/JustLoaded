@@ -1,16 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\JustLoaded.Util\JustLoaded.Util.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="PathLib" Version="0.9.8" />
-    </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\JustLoaded.Util\JustLoaded.Util.csproj" />
+  </ItemGroup>
 </Project>
