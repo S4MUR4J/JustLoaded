@@ -1,42 +1,49 @@
-using System.Diagnostics;
-using JustLoaded.Util.Validation;
-using PathLib;
-
 namespace JustLoaded.Filesystem;
 
-public class RelativeFilesystem : IFilesystem {
+/// <summary>
+/// Wraps another filesystem and prepends a fixed path prefix to every operation.
+/// Callers see paths relative to the prefix; the inner filesystem sees full prefixed paths.
+/// </summary>
+public class RelativeFilesystem(IFilesystem inner, string prefix) : IFilesystem
+{
+    public bool HandlesSource => inner.HandlesSource;
 
-    public bool HandlesSource => _nestedFilesystem.HandlesSource;
-    
-    private readonly IFilesystem _nestedFilesystem;
-    private readonly IPurePath _prefixPath;
-    
-    public RelativeFilesystem(IFilesystem nested, IPurePath prefixPath) {
-        _nestedFilesystem = nested;
-        _prefixPath = prefixPath;
-        prefixPath.Matches(path => !path.IsAbsolute());
-    }
-    
-    public Stream? OpenFile(ModAssetPath path) {
-        return _nestedFilesystem.OpenFile(TransformKey(path));
-    }
+    private readonly string _prefix = prefix.StartsWith('/')
+        ? throw new ArgumentException("Prefix must be a relative path.", nameof(prefix))
+        : prefix.TrimEnd('/');
 
-    public IEnumerable<ModAssetPath> ListFiles(ModAssetPath path, string pattern = "*", bool recursive = false) {
-        return _nestedFilesystem.ListFiles(TransformKey(path), pattern, recursive)
-            .Select(ModAssetPathExtensions.RelativeToSelect(_prefixPath));
+    public Stream? OpenFile(ModAssetPath path)
+    {
+        var prependedPath = Prepend(path);
+        return inner.OpenFile(prependedPath);
     }
 
-    public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path) {
-        return _nestedFilesystem.ListPaths(TransformKey(path))
-            .Select(ModAssetPathExtensions.RelativeToSelect(_prefixPath));
+    public IEnumerable<ModAssetPath> ListFiles(
+        ModAssetPath path,
+        string pattern = "*",
+        bool recursive = false
+    )
+    {
+        var prependedPath = Prepend(path);
+        return inner
+            .ListFiles(path: prependedPath, pattern: pattern, recursive: recursive)
+            .Select(Strip);
     }
 
-    private IPurePath TransformPath(IPurePath path) {
-        return _prefixPath.Join(path);
+    public IEnumerable<ModAssetPath> ListPaths(ModAssetPath path)
+    {
+        var prependedPath = Prepend(path);
+        return inner.ListPaths(prependedPath).Select(Strip);
     }
 
-    private ModAssetPath TransformKey(in ModAssetPath key) {
-        return new ModAssetPath(key.modSelector, TransformPath(key.path));
-    }
-    
+    private ModAssetPath Prepend(ModAssetPath key) =>
+        new ModAssetPath(key.modSelector, _prefix + "/" + key.path);
+
+    private ModAssetPath Strip(ModAssetPath result) =>
+        new ModAssetPath(
+            result.modSelector,
+            result.path.StartsWith(_prefix + "/")
+                ? result.path[(_prefix.Length + 1)..]
+                : result.path
+        );
 }
