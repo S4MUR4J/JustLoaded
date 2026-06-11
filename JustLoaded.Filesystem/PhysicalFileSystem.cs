@@ -1,5 +1,8 @@
 namespace JustLoaded.Filesystem;
 
+/// <summary>
+/// Disk-backed filesystem rooted at a given directory. Paths are resolved relative to the root.
+/// </summary>
 public class PhysicalFilesystem(string rootParam) : IFilesystem
 {
     private string Root { get; } = rootParam;
