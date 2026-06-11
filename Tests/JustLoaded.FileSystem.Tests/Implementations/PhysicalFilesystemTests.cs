@@ -2,7 +2,7 @@ using JustLoaded.Filesystem.Implementations;
 using NUnit.Framework;
 using PathLib;
 
-namespace JustLoaded.Filesystem.Tests.Physical;
+namespace JustLoaded.Filesystem.Tests.Implementations;
 
 /// <summary>
 /// TODO fix absolute paths

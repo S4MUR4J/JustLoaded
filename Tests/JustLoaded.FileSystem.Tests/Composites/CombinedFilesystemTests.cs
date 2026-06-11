@@ -1,7 +1,7 @@
 using JustLoaded.Filesystem.Composites;
 using JustLoaded.Filesystem.Implementations;
 
-namespace JustLoaded.Filesystem.Tests.Combined;
+namespace JustLoaded.Filesystem.Tests.Composites;
 
 public class CombinedFilesystemTests : FilesystemTester<CombinedFilesystem, CfsTestSourceSource>
 {
