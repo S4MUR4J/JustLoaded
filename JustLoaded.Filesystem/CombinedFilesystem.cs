@@ -4,7 +4,7 @@ public class CombinedFilesystem : IFilesystem {
     
     public bool HandlesSource => true;
 
-    private readonly Dictionary<string, IFilesystem> _fileSystems = new();
+    private readonly Dictionary<string, IFilesystem> _fileSystems = new Dictionary<string, IFilesystem>();
 
     public void AddFileSystem(string name, IFilesystem filesystem) {
         _fileSystems.Add(name, filesystem);

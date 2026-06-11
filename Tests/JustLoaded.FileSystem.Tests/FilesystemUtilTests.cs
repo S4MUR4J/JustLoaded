@@ -1,10 +1,11 @@
+using FluentAssertions;
 using NUnit.Framework;
 using PathLib;
 
 namespace JustLoaded.Filesystem.Tests;
 
 public class FilesystemUtilTests {
-    
+
     [TestCase("path", "path")]
     [TestCase("./path", "./path")]
     [TestCase("path/", "path")]
@@ -21,7 +22,7 @@ public class FilesystemUtilTests {
     public void CollapsePathTest(string path, string expectedCollapsed) {
         var typedPath = new PurePosixPath(path).CollapsePath();
 
-        Assert.That(typedPath.ToPosix(), Is.EqualTo(expectedCollapsed));
+        typedPath.ToPosix().Should().Be(expectedCollapsed);
     }
 
     [TestCase("..", null, true)]
@@ -31,20 +32,16 @@ public class FilesystemUtilTests {
     [TestCase("path/..", ".", false)]
     public void AbsoluteCollapsePathTest(string path, string? expected, bool shouldThrow) {
         if (shouldThrow) {
-            Assert.Throws<DirectoryNotFoundException>(() => {
-                var typedPath = new PurePosixPath(path).CollapseAbsolutePath();
-                Assert.That(typedPath.ToString(), Is.EqualTo(expected));
-            });
+            var act = () => new PurePosixPath(path).CollapseAbsolutePath();
+            act.Should().Throw<DirectoryNotFoundException>();
         }
         else {
-            Assert.DoesNotThrow(() => {
-                var typedPath = new PurePosixPath(path).CollapseAbsolutePath();
-                Assert.That(typedPath.ToString(), Is.EqualTo(expected));
-            });
+            var typedPath = new PurePosixPath(path).CollapseAbsolutePath();
+            typedPath.ToString().Should().Be(expected);
         }
     }
 
-    
+
     [TestCase("path.", null, true)]
     [TestCase("path..", null, true)]
     [TestCase("path", "path", false)]
@@ -74,7 +71,7 @@ public class FilesystemUtilTests {
         var pathRelativeTo = pRelativeTo.AsPath();
 
         var relative = pathBase.RelativeToFixed(pathRelativeTo);
-        
-        Assert.That(relative.ToPosix(), Is.EqualTo(result.AsPath().ToPosix()));
+
+        relative.ToPosix().Should().Be(result.AsPath().ToPosix());
     }
 }

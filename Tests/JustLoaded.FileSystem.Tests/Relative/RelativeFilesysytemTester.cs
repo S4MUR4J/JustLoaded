@@ -1,4 +1,5 @@
 using System.Collections;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace JustLoaded.Filesystem.Tests.Relative;
@@ -12,10 +13,10 @@ public abstract class RelativeFilesystemTester<TSource> : FilesystemTester<Relat
         MakeFile(file, fileContent);
 
         using var stream = fs.OpenFile(query);
-        Assert.That(stream, Is.Not.Null);
-        
+        stream.Should().NotBeNull();
+
         using var text = new StreamReader(stream);
-        Assert.That(text.ReadLine(), Is.EqualTo(fileContent));
+        text.ReadLine().Should().Be(fileContent);
     }
     
     public override void GetSingleFile(ModAssetPath fileName) {

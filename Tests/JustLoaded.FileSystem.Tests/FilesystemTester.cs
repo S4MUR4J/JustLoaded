@@ -1,4 +1,5 @@
 using System.Collections;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace JustLoaded.Filesystem.Tests;
@@ -28,10 +29,10 @@ public abstract class FilesystemTester<TFilesystem, TSource> where TSource : IFi
         MakeFile(fileName, fileContent);
         
         using var stream = fs.OpenFile(fileName);
-        Assert.That(stream, Is.Not.Null);
-        
+        stream.Should().NotBeNull();
+
         using var text = new StreamReader(stream);
-        Assert.That(text.ReadLine(), Is.EqualTo(fileContent));
+        text.ReadLine().Should().Be(fileContent);
     }
     
     [TestCaseSource(nameof(SourceMultipleFilesFlat))]
@@ -55,11 +56,11 @@ public abstract class FilesystemTester<TFilesystem, TSource> where TSource : IFi
 
         var dirsSet = new HashSet<ModAssetPath>(expectedDirs);
         foreach (var dir in fs.ListPaths(listDir)) {
-            Assert.That(dirsSet, Contains.Item(dir));
+            dirsSet.Should().Contain(dir);
             dirsSet.Remove(dir);
         }
-        
-        Assert.That(dirsSet, Is.Empty);
+
+        dirsSet.Should().BeEmpty();
     }
     
     [TestCaseSource(nameof(SourceListFilesShallow))]
@@ -88,17 +89,17 @@ public abstract class FilesystemTester<TFilesystem, TSource> where TSource : IFi
         
         var dirsSet = new HashSet<ModAssetPath>(expectedFiles);
         foreach (var dir in fs.ListFiles(listDir, pattern, recursive)) {
-            Assert.That(dirsSet, Contains.Item(dir));
-            
+            dirsSet.Should().Contain(dir);
             dirsSet.Remove(dir);
         }
-        Assert.That(dirsSet, Is.Empty);
+
+        dirsSet.Should().BeEmpty();
     }
     
     protected void AssertFileContents(TFilesystem vfs, ModAssetPath file, string expectedContent) {
         using var stream1 = vfs.OpenFile(file);
-        Assert.That(stream1, Is.Not.Null);
+        stream1.Should().NotBeNull();
         using var text = new StreamReader(stream1);
-        Assert.That(text.ReadLine(), Is.EqualTo(expectedContent));
+        text.ReadLine().Should().Be(expectedContent);
     }
 }
