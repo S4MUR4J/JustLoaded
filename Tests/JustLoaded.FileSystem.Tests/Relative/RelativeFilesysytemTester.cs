@@ -1,7 +1,7 @@
 using System.Collections;
 using JustLoaded.Filesystem;
 
-namespace JustLoaded.FileSystem.Tests.Relative;
+namespace JustLoaded.Filesystem.Tests.Relative;
 
 public abstract class RelativeFilesystemTester<TSource> : FilesystemTester<RelativeFilesystem, TSource> where TSource : IRelativeFilesystemTestSource, new() {
     protected static IEnumerable SourceSingleFileRelative => new TSource().SourceSingleFileRelative;

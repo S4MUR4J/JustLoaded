@@ -1,12 +1,12 @@
 using JustLoaded.Filesystem;
 using PathLib;
 
-namespace JustLoaded.FileSystem.Tests.Physical;
+namespace JustLoaded.Filesystem.Tests.Physical;
 
 /// <summary>
 /// TODO fix absolute paths
 /// </summary>
-public class PhysicalFileSystemTests : FilesystemTester<PhysicalFilesystem, FilesystemTestSource> {
+public class PhysicalFilesystemTests : FilesystemTester<PhysicalFilesystem, FilesystemTestSource> {
     
     protected override PhysicalFilesystem SetupFilesystem() {
         return new PhysicalFilesystem(FileHelper.ResourcesPath);

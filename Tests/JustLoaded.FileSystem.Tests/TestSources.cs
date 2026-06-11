@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Threading.Tasks.Sources;
 using JustLoaded.Filesystem;
-using static JustLoaded.FileSystem.Tests.IFilesystemTestSource;
+using static JustLoaded.Filesystem.Tests.IFilesystemTestSource;
 
-namespace JustLoaded.FileSystem.Tests;
+namespace JustLoaded.Filesystem.Tests;
 
 public interface IFilesystemTestSource {
 

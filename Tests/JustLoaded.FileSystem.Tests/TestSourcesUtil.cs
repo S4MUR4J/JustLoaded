@@ -1,6 +1,6 @@
 using JustLoaded.Filesystem;
 
-namespace JustLoaded.FileSystem.Tests;
+namespace JustLoaded.Filesystem.Tests;
 
 public static class TestSourcesUtil {
 

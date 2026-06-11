@@ -1,7 +1,7 @@
 using JustLoaded.Filesystem;
 using PathLib;
 
-namespace JustLoaded.FileSystem.Tests;
+namespace JustLoaded.Filesystem.Tests;
 
 public class FilesystemUtilTests {
     

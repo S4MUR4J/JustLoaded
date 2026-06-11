@@ -1,6 +1,6 @@
 using JustLoaded.Filesystem;
 
-namespace JustLoaded.FileSystem.Tests.Virtual;
+namespace JustLoaded.Filesystem.Tests.Virtual;
 
 public class VirtualFilesystemTests : FilesystemTester<VirtualFilesystem, FilesystemTestSource> {
 

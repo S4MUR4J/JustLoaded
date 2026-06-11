@@ -3,7 +3,7 @@ using System.Xml.XPath;
 using JustLoaded.Filesystem;
 using PathLib;
 
-namespace JustLoaded.FileSystem.Tests;
+namespace JustLoaded.Filesystem.Tests;
 
 public abstract class FilesystemTester<TFilesystem, TSource> where TSource : IFilesystemTestSource, new() where TFilesystem : IFilesystem {
 

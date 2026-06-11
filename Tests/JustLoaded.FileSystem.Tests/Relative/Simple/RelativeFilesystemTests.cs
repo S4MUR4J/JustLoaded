@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using JustLoaded.Filesystem;
 
-namespace JustLoaded.FileSystem.Tests.Relative.Simple;
+namespace JustLoaded.Filesystem.Tests.Relative.Simple;
 
 //TODO Write RelativeFilesystem test cases for both simple and combined
 public class SimpleRelativeFilesystemTests : RelativeFilesystemTester<Source> {
