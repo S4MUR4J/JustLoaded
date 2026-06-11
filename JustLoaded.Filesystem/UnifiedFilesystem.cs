@@ -4,14 +4,14 @@ namespace JustLoaded.Filesystem;
 /// Layers multiple filesystems with priority-based resolution. Earlier filesystems take precedence;
 /// duplicate paths from lower-priority filesystems are silently skipped.
 /// </summary>
-public class UnifiedFileSystem : IFilesystem
+public class UnifiedFilesystem : IFilesystem
 {
     private readonly List<IFilesystem> _filesystems;
 
     public bool HandlesSource { get; }
 
     /// <param name="filesystems">Ordered highest to lowest priority.</param>
-    public UnifiedFileSystem(IEnumerable<IFilesystem> filesystems)
+    public UnifiedFilesystem(IEnumerable<IFilesystem> filesystems)
     {
         _filesystems = new List<IFilesystem>(filesystems);
 
@@ -24,7 +24,7 @@ public class UnifiedFileSystem : IFilesystem
         HandlesSource = _filesystems.First().HandlesSource;
         if (_filesystems.Any(fs => fs.HandlesSource != HandlesSource))
             throw new ArgumentException(
-                $"Cannot mix source-handling and non-source-handling filesystems in {nameof(UnifiedFileSystem)}."
+                $"Cannot mix source-handling and non-source-handling filesystems in {nameof(UnifiedFilesystem)}."
             );
     }
 
