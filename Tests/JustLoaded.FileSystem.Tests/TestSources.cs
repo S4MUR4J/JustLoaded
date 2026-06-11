@@ -1,4 +1,5 @@
 using System.Collections;
+using NUnit.Framework;
 using static JustLoaded.Filesystem.Tests.IFilesystemTestSource;
 
 namespace JustLoaded.Filesystem.Tests;
