@@ -17,7 +17,7 @@ public class ModAssetPath : IEquatable<ModAssetPath> {
 
     /// <param name="modSelector">Mod identifier, or <c>"*"</c> to match any mod.</param>
     /// <param name="path">File path within the mod's filesystem.</param>
-    internal ModAssetPath(string modSelector, string path) {
+    public ModAssetPath(string modSelector, string path) {
         this.modSelector = modSelector;
         this.path = path;
     }
